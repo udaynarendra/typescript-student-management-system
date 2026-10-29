@@ -1,23 +1,36 @@
-import type { ErrorRequestHandler } from "express";
+import type { ErrorRequestHandler,Request,Response,NextFunction } from "express";
 
 import { ApiError } from "../utils/ApiError.js";
 
 export const errorMiddleware: ErrorRequestHandler = (
-    err,
-    req,
-    res,
-    next
+    err:any,
+    req:Request,
+    res:Response,
+    next:NextFunction
 ) => {
+    let error={...err};
+    error.message=err.message;
+    //Log to console for the developer
+    console.error('ERROR LOG:',err);
     let statusCode = 500;
     let message = "Internal Server Error";
-
-    if (err instanceof ApiError) {
-        statusCode = err.statusCode;
-        message = err.message;
+//send Operational Error (Predictable client errors)
+    if (error.isOperational||error instanceof ApiError) {
+        res.status(error.statusCode|| 500).json({
+            success:false,
+            error:error.message,
+            //only send stack trace in development mode
+            stack:process.env.NODE_ENV==='development'?err.stack:undefined
+        })
+        statusCode = error.statusCode;
+        message = error.message;
     }
 
-    return res.status(statusCode).json({
+    else{
+        //send Programming/unknown Error(Don't leak details to client)
+        res.status(statusCode).json({
         success: false,
-        message
+        error:'Server Error.Something went wrong.'
     });
+}
 };
