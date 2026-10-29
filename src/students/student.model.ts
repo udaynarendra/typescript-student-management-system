@@ -1,10 +1,10 @@
 import {Schema,model,Document} from 'mongoose';
-interface IStudent extends Document{
+export interface IStudent extends Document{
     name:string;
     email:string;
     phone:string;
     year:number,
-    branch:string;
+    department:string;
     section:string;
     rollNo:string;
     admissionYear:number;
@@ -34,12 +34,12 @@ const studentSchema = new Schema<IStudent>({
         required:[true,"Phone Number is required"],
         match:[/^\+?[0-9]{10,15}$/,"Invalid phone number"],
     },
-    branch:{
+    department:{
         type:String,
         trim:true,
-        required:[true,"Branch is required"]
+        required:[true,"Department is required"]
     },
-    year:{
+    admissionYear:{
         type:Number,
         required:[true,"Academic year is required"],
         min:[1,"Year must be at least 1"],
