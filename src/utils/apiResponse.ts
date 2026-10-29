@@ -1,19 +1,16 @@
-import type { apiResponse, apiResponseBase } from "../types/apiResponseTypes.js"
-export const createApiResponse=<T>(
-    message:string,
-    data:T
-):apiResponse<T>=>{
-    return {
-        success:true,
-        message,
-        data
-    };
 
-};
+// src/utils/ApiResponse.ts
+export class ApiResponse<T> {
+    public statusCode: number;
+    public data?: T;
+    public message: string;
+    public success: boolean;
 
-export const createMessageResponse=(message:string):apiResponseBase=>{
-    return {
-        success:true,
-        message
+    constructor(statusCode: number, data: T, message = 'Success') {
+        this.statusCode = statusCode;
+        this.message = message;
+        // Automatically sets success to true for 2xx and 3xx status codes
+        this.success = statusCode < 400;
+         this.data= data;
     }
 }
